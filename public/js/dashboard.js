@@ -259,7 +259,7 @@ async function loadAdminProfile() {
 /* ═══════════════════════════
    CONFIRM MODAL
 ════════════════════════════ */
-function openConfirmModal(title, message, onConfirm) {
+function openConfirmModal(title, message, onConfirm, confirmLabel) {
     _confirmCallback = onConfirm;
     var modal = document.getElementById('confirmModal');
     if (!modal) return;
@@ -267,7 +267,18 @@ function openConfirmModal(title, message, onConfirm) {
     if (h3) h3.textContent = title;
     var txt = document.getElementById('confirmText');
     if (txt) txt.innerHTML = message;
+    var delBtn = document.getElementById('confirmDelete');
+    if (delBtn) delBtn.textContent = confirmLabel || 'Delete';
     modal.classList.add('active');
+}
+
+function confirmLogout() {
+    openConfirmModal(
+        'Logout',
+        'Are you sure you want to log out of the Admin Panel?',
+        function () { logout(); },
+        'Logout'
+    );
 }
 
 function closeConfirmModal() {
@@ -334,7 +345,7 @@ async function renderDashboardCharts(d) {
                 borderColor: '#fff', borderWidth: 3, hoverOffset: 6
             }]
         },
-        options: { responsive: true, cutout: '68%', plugins: { legend: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false } } }
     });
 
     try {
@@ -379,6 +390,7 @@ async function renderDashboardCharts(d) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
                 scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
             }
@@ -1097,7 +1109,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* Sidebar */
     var hamburger = document.getElementById('hamburger');
-    if (hamburger) hamburger.addEventListener('click', openSidebar);
+    if (hamburger) hamburger.addEventListener('click', function () {
+        var sb = document.getElementById('sidebar');
+        if (sb && sb.classList.contains('open')) closeSidebar();
+        else openSidebar();
+    });
     var sidebarClose = document.getElementById('sidebarClose');
     if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
     var sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -1145,6 +1161,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var confirmDeleteBtn = document.getElementById('confirmDelete');
     if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', function () {
         if (typeof _confirmCallback === 'function') _confirmCallback();
+    });
+    var confirmModalEl = document.getElementById('confirmModal');
+    if (confirmModalEl) confirmModalEl.addEventListener('click', function (e) {
+        if (e.target === confirmModalEl) closeConfirmModal();
     });
 
     /* Filters */

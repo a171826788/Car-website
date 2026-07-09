@@ -276,6 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ─── PRICING CONFIG (maps vehicle type → rates) ─── */
+  const FLAT_TOLL_PARKING = 350; // flat toll & parking — every outstation trip, regardless of vehicle
+
   const vehiclePricingConfig = {
     'sedan':       { rate: 18, baseFare: 2850, driverAllowance: 400, tollParking: 350, icon: '🚗' },
     'suv':         { rate: 24, baseFare: 3600, driverAllowance: 500, tollParking: 450, icon: '🚙' },
@@ -338,22 +340,26 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function getOutstationConfigForVehicle(v) {
-    if (!v) return outstationPlansConfig['sedan'];
-    const type = (v.type || '').toLowerCase();
-    const name = (v.name || '').toLowerCase();
-    if (type === 'hatchback' || name.includes('wagonr') || name.includes('alto') || name.includes('wagnor')) return outstationPlansConfig['hatchback'];
-    if (type === 'sedan') {
-      if (name.includes('amaze') || name.includes('ciaz') || name.includes('etios')) return outstationPlansConfig['luxury-sedan'];
-      return outstationPlansConfig['sedan'];
+    let base;
+    if (!v) base = outstationPlansConfig['sedan'];
+    else {
+      const type = (v.type || '').toLowerCase();
+      const name = (v.name || '').toLowerCase();
+      if (type === 'hatchback' || name.includes('wagonr') || name.includes('alto') || name.includes('wagnor')) base = outstationPlansConfig['hatchback'];
+      else if (type === 'sedan') {
+        base = (name.includes('amaze') || name.includes('ciaz') || name.includes('etios'))
+          ? outstationPlansConfig['luxury-sedan'] : outstationPlansConfig['sedan'];
+      }
+      else if (type === 'suv') {
+        base = (name.includes('innova') || name.includes('crysta'))
+          ? outstationPlansConfig['premium-suv'] : outstationPlansConfig['suv'];
+      }
+      else if (type === 'premium-suv') base = outstationPlansConfig['premium-suv'];
+      else if (type === 'tempo' || type === 'bus' || name.includes('traveller') || name.includes('tempo')) base = outstationPlansConfig['tempo'];
+      else base = outstationPlansConfig[type] || outstationPlansConfig['sedan'];
     }
-    if (type === 'suv') {
-      if (name.includes('innova') || name.includes('crysta')) return outstationPlansConfig['premium-suv'];
-      return outstationPlansConfig['suv'];
-    }
-    if (type === 'premium-suv') return outstationPlansConfig['premium-suv'];
-    if (type === 'tempo' || type === 'bus' || name.includes('traveller') || name.includes('tempo')) return outstationPlansConfig['tempo'];
-    if (outstationPlansConfig[type]) return outstationPlansConfig[type];
-    return outstationPlansConfig['sedan'];
+    const liveRate = (v && v.pricePerKm) ? Number(v.pricePerKm) : base.rate;
+    return { ...base, rate: liveRate };
   }
 
   /* ─── LOCAL TRAVEL PACKAGES CONFIG (From User Image Table) ─── */
@@ -410,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  function getLocalConfigForVehicle(v) {
+  function getStaticLocalFallback(v) {
     if (!v) return localPlansConfig['sedan'];
     const type = (v.type || '').toLowerCase();
     const name = (v.name || '').toLowerCase();
@@ -426,6 +432,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (type === 'premium-suv') return localPlansConfig['premium-suv'];
     if (localPlansConfig[type]) return localPlansConfig[type];
     return localPlansConfig['sedan'];
+  }
+
+  // ✅ DYNAMIC — image 3 wala Half Day / 8 Hrs / Full Day structure, lekin rates
+  // vehicle ke apne backend pricePerDay/pricePerKm se derive hote hain, static nahi.
+  // Backend price missing ho to purani static table par fallback.
+  function getLocalConfigForVehicle(v) {
+    const perDay = (v && v.pricePerDay) ? Number(v.pricePerDay) : 0;
+    if (!perDay) return getStaticLocalFallback(v);
+
+    const perKm = (v && v.pricePerKm) ? Number(v.pricePerKm) : 0;
+    const type = (v && v.type || '').toLowerCase();
+    const noHalfDay = (type === 'suv' || type === 'premium-suv' || type === 'tempo' || type === 'bus');
+    const round10 = (n) => Math.round(n / 10) * 10;
+
+    return {
+      name: (v && v.name) || 'Vehicle',
+      halfDay: noHalfDay ? null : { hrs: 4, km: 40, fare: round10(perDay * 0.35) },
+      eightHrs: { hrs: 8, km: 80, fare: round10(perDay * 0.65) },
+      fullDay: { hrs: 12, km: 180, fare: perDay },
+      extraKmRate: perKm || 12,
+      extraHrRate: round10(perDay / 25) || 100,
+      nightCharge: round10(perDay / 13) || 200,
+      maxPassengers: (v && v.seats) ? Number(v.seats) + 1 : 4
+    };
   }
 
   /* ─── NOMINATIM (GEOCODING) + OSRM (ROUTING) — free, no API key needed ─── */
@@ -606,6 +636,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const summaryTaxes = document.getElementById('summaryTaxes');
   const summaryTotal = document.getElementById('summaryTotal');
   const goToStep2Btn = document.getElementById('goToStep2Btn');
+  const minDistanceWarning = document.getElementById('minDistanceWarning');
+  const tollParkingRow = document.getElementById('tollParkingRow');
   const backToStep1Btn = document.getElementById('backToStep1Btn');
   const goToStep3Btn = document.getElementById('goToStep3Btn');
   const backToStep2Btn = document.getElementById('backToStep2Btn');
@@ -643,6 +675,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (urlParams.get('dropoff')) dropoffInput.value = urlParams.get('dropoff');
     if (urlParams.get('date')) journeyDateInput.value = urlParams.get('date');
     if (urlParams.get('time')) journeyTimeInput.value = urlParams.get('time');
+    if (urlParams.get('vehicle')) {
+      window.__preselectedVehicleParam = urlParams.get('vehicle');
+    }
 
     const typeParam = urlParams.get('type');
     if (typeParam && typeParam.toLowerCase().includes('round')) {
@@ -662,6 +697,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatToday = today.toISOString().split('T')[0];
   journeyDateInput.min = formatToday;
   if (journeyDateInput.value < formatToday) journeyDateInput.value = formatToday;
+  if (!journeyDateInput.value) journeyDateInput.value = formatToday;
+  if (!journeyTimeInput.value) {
+    const nowH = String(today.getHours()).padStart(2, '0');
+    const nowM = String(today.getMinutes()).padStart(2, '0');
+    journeyTimeInput.value = `${nowH}:${nowM}`;
+  }
+
+  function adjustDateIfTimePassed() {
+    const now = new Date();
+    if (!journeyDateInput.value || !journeyTimeInput.value) return;
+    const selectedDT = new Date(`${journeyDateInput.value}T${journeyTimeInput.value}`);
+    if (selectedDT <= now) {
+      const next = new Date(journeyDateInput.value + 'T00:00:00');
+      next.setDate(next.getDate() + 1);
+      journeyDateInput.value = next.toISOString().split('T')[0];
+      if (tripType === 'Round Trip' && returnDateInput.value && returnDateInput.value < journeyDateInput.value) {
+        returnDateInput.value = journeyDateInput.value;
+      }
+    }
+  }
+  journeyTimeInput.addEventListener('change', adjustDateIfTimePassed);
 
   calculateDistanceAndFares();
 
@@ -929,6 +985,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (outstationToggle) outstationToggle.checked = false;
       if (localPlanGroup) localPlanGroup.style.display = 'block';
     } else {
+      // Local off ho raha hai -> outstation zabardasti ON kar do (dono kabhi off nahi honge)
+      if (outstationToggle) outstationToggle.checked = true;
       if (localPlanGroup) localPlanGroup.style.display = 'none';
     }
     renderVehiclesList();
@@ -938,6 +996,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (outstationToggle.checked) {
       if (localToggle) localToggle.checked = false;
       if (localPlanGroup) localPlanGroup.style.display = 'none';
+    } else {
+      // Outstation off ho raha hai -> local zabardasti ON kar do (dono kabhi off nahi honge)
+      if (localToggle) localToggle.checked = true;
+      if (localPlanGroup) localPlanGroup.style.display = 'block';
     }
     renderVehiclesList();
     calculateDistanceAndFares();
@@ -1016,6 +1078,25 @@ async function calculateDistanceAndFares() {
         : `~ ${calculatedDuration}`;
   }
   if (summaryTripType) summaryTripType.textContent = tripType;
+
+  // ✅ Jab tak koi vehicle explicitly select nahi hui, fare breakdown 0 rahega
+  if (!selectedVehicleId) {
+    const extraKmRowEl = document.getElementById('extraKmRow');
+    const localExtraHrsRowEl = document.getElementById('localExtraHrsRow');
+    const localNightRowEl = document.getElementById('localNightRow');
+    const outstationChargeRowEl = document.getElementById('outstationChargeRow');
+    const tollParkingRowEl = document.getElementById('tollParkingRow');
+    const baseFareLabelEl = document.getElementById('summaryBaseFareLabel');
+    if (extraKmRowEl) extraKmRowEl.style.display = 'none';
+    if (localExtraHrsRowEl) localExtraHrsRowEl.style.display = 'none';
+    if (localNightRowEl) localNightRowEl.style.display = 'none';
+    if (outstationChargeRowEl) outstationChargeRowEl.style.display = 'none';
+    if (tollParkingRowEl) tollParkingRowEl.style.display = 'none';
+    if (baseFareLabelEl) baseFareLabelEl.textContent = 'Base Fare';
+    updateFareSummaryDisplay(0, 0, 0, 0, 0, 0);
+    checkMinDistanceValidation(outstationToggle?.checked || false, distForFare);
+    return;
+  }
 
   const selectedVehicle =
     dbVehicles.find(v => v._id === selectedVehicleId) || { type: selectedVehicleType };
@@ -1131,27 +1212,16 @@ async function calculateDistanceAndFares() {
       }
     }
 
-    const minDist = days * outstationConfig.minKmPerDay;
-    finalBaseFare = minDist * outstationConfig.rate;
+    // ✅ Seedha per-km × total km — minimum-km base fare wala split hata diya
+    finalBaseFare = Math.round(distForFare * outstationConfig.rate);
 
     if (baseFareLabel) {
-      baseFareLabel.textContent = `Base Fare (Min ${minDist} KM)`;
+      baseFareLabel.textContent = `Base Fare (${distForFare} km × ₹${outstationConfig.rate}/km)`;
     }
 
-    const extraKm = Math.max(0, distForFare - minDist);
-    extraKmCharge = extraKm * outstationConfig.rate;
-
-    if (extraKmCharge > 0) {
-      if (extraKmRow) extraKmRow.style.display = 'flex';
-      if (summaryExtraKm) {
-        summaryExtraKm.textContent = `₹ ${Number(extraKmCharge).toLocaleString('en-IN')}`;
-      }
-      if (extraKmLabel) {
-        extraKmLabel.textContent = `Extra KM Charge (${extraKm} km)`;
-      }
-    } else {
-      if (extraKmRow) extraKmRow.style.display = 'none';
-    }
+    // Extra chali hui km driver khud settle karega, yahan charge nahi hoga
+    extraKmCharge = 0;
+    if (extraKmRow) extraKmRow.style.display = 'none';
 
     outstationDriverCharge = days * outstationConfig.driverTaPerDay;
 
@@ -1175,9 +1245,13 @@ async function calculateDistanceAndFares() {
     if (outstationChargeRow) outstationChargeRow.style.display = 'none';
   }
 
+  // ✅ Flat toll & parking — sirf outstation trip pe, local package mein nahi
+  const tollParkingCharge = isOutstation ? FLAT_TOLL_PARKING : 0;
+  if (tollParkingRow) tollParkingRow.style.display = tollParkingCharge > 0 ? 'flex' : 'none';
+
   const subtotal =
     finalBaseFare +
-    pricing.tollParking +
+    tollParkingCharge +
     outstationDriverCharge +
     extraKmCharge +
     localExtraHrsCharge +
@@ -1187,10 +1261,25 @@ async function calculateDistanceAndFares() {
     finalBaseFare,
     distanceCharge,
     0,
-    pricing.tollParking,
+    tollParkingCharge,
     taxes,
     subtotal
   );
+
+  // ✅ 250km minimum outstation validation
+  checkMinDistanceValidation(isOutstation, distForFare);
+}
+
+function checkMinDistanceValidation(isOutstation, distForFare) {
+  const goToStep2BtnEl = document.getElementById('goToStep2Btn');
+  const warningEl = document.getElementById('minDistanceWarning');
+  const belowMin = isOutstation && distForFare < 250;
+
+  if (goToStep2BtnEl) {
+    goToStep2BtnEl.disabled = belowMin;
+    goToStep2BtnEl.classList.toggle('btn-disabled', belowMin);
+  }
+  if (warningEl) warningEl.style.display = belowMin ? 'block' : 'none';
 }
 
   function updateFareSummaryDisplay(base, dist, driver, toll, tax, total) {
@@ -1238,6 +1327,23 @@ async function calculateDistanceAndFares() {
     const typeOrder = { 'sedan': 0, 'suv': 1, 'premium-suv': 2, 'tempo': 3, 'bus': 4 };
     const sorted = [...dbVehicles].sort((a, b) => (typeOrder[a.type] ?? 9) - (typeOrder[b.type] ?? 9));
 
+    // Pre-select vehicle passed via URL (?vehicle=<id> or ?vehicle=<name>) — comes from
+    // vehicles.html "Book Now" button (passes _id) or vehicle-detail/modal (passes name)
+    if (window.__preselectedVehicleParam && !selectedVehicleId) {
+      const p = window.__preselectedVehicleParam;
+      let decodedP = p;
+      try { decodedP = decodeURIComponent(p); } catch (e) {}
+      const match = dbVehicles.find(v =>
+        v._id === p ||
+        (v.name && v.name.toLowerCase() === decodedP.toLowerCase())
+      );
+      if (match) {
+        selectedVehicleId = match._id;
+        selectedVehicleType = match.type || 'sedan';
+      }
+      window.__preselectedVehicleParam = null; // apply only once
+    }
+
     const activeVehicle = dbVehicles.find(v => v._id === selectedVehicleId);
     const isLocalMode = localToggle?.checked || false;
     if (activeVehicle && isLocalMode) {
@@ -1257,8 +1363,7 @@ async function calculateDistanceAndFares() {
 
     sorted.forEach(v => {
       const pricing = vehiclePricingConfig[v.type] || vehiclePricingConfig['sedan'];
-      const isSelected = selectedVehicleId === v._id || (!selectedVehicleId && v.type === selectedVehicleType);
-      if (!selectedVehicleId && v.type === selectedVehicleType) selectedVehicleId = v._id;
+      const isSelected = selectedVehicleId === v._id;
 
       const vehicleImg = getVehicleImage(v);
       const fallbackImg = `https://placehold.co/400x220/6E1F2B/ffffff?text=${encodeURIComponent(v.name || v.type)}`;
@@ -1290,19 +1395,29 @@ async function calculateDistanceAndFares() {
         }
       } else if (isOutstation) {
         const outstationConfig = getOutstationConfigForVehicle(v);
-        let days = 1;
-        if (tripType === 'Round Trip' && journeyDateInput.value && returnDateInput.value) {
-          const start = new Date(journeyDateInput.value + 'T00:00:00');
-          const end = new Date(returnDateInput.value + 'T00:00:00');
-          const diffTime = end - start;
-          if (diffTime >= 0) {
-            days = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const perDay = Number(v.pricePerDay) || 0;
+
+        if (perDay) {
+          // ✅ Ab seedha pricePerDay dikhega — vehicles.html jaisa hi consistent
+          displayFare = perDay;
+          displayPriceSub = '/day';
+          displayRateNote = `₹${outstationConfig.rate}/km beyond 250 km/day`;
+        } else {
+          // Fallback: agar pricePerDay set hi nahi hai to purana min-km calculation
+          let days = 1;
+          if (tripType === 'Round Trip' && journeyDateInput.value && returnDateInput.value) {
+            const start = new Date(journeyDateInput.value + 'T00:00:00');
+            const end = new Date(returnDateInput.value + 'T00:00:00');
+            const diffTime = end - start;
+            if (diffTime >= 0) {
+              days = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            }
           }
+          const minDist = days * outstationConfig.minKmPerDay;
+          displayFare = minDist * outstationConfig.rate;
+          displayPriceSub = 'min';
+          displayRateNote = `Min ${minDist} KM at ₹${outstationConfig.rate}/km`;
         }
-        const minDist = days * outstationConfig.minKmPerDay;
-        displayFare = minDist * outstationConfig.rate;
-        displayPriceSub = 'min';
-        displayRateNote = `Min ${minDist} KM at ₹${outstationConfig.rate}/km`;
       }
 
       const card = document.createElement('div');
@@ -1384,6 +1499,11 @@ async function calculateDistanceAndFares() {
     if (tripType === 'Round Trip' && !returnDateInput.value) { alert('Please select a return date.'); return false; }
     if (tripType === 'Round Trip' && returnDateInput.value < journeyDateInput.value) {
       alert('Return date must be after journey date.'); return false;
+    }
+    let distCheck = calculatedDistance;
+    if (tripType === 'Round Trip') distCheck *= 2;
+    if (outstationToggle?.checked && distCheck < 250) {
+      alert('Minimum 250 km ride required for outstation trips.'); return false;
     }
     return true;
   }
@@ -1470,10 +1590,9 @@ async function calculateDistanceAndFares() {
           days = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
         }
       }
-      const minDist = days * outstationConfig.minKmPerDay;
-      finalBaseFare = minDist * outstationConfig.rate;
-      const extraKm = Math.max(0, distForFare - minDist);
-      extraKmCharge = extraKm * outstationConfig.rate;
+      // ✅ Seedha per-km × total km, extra km line nahi (driver settle karega)
+      finalBaseFare = Math.round(distForFare * outstationConfig.rate);
+      extraKmCharge = 0;
       outstationDriverCharge = days * outstationConfig.driverTaPerDay;
     } else if (isLocal) {
       const localConfig = getLocalConfigForVehicle(vehicle || { type: selectedVehicleType });
@@ -1497,7 +1616,8 @@ async function calculateDistanceAndFares() {
       localNightCharge = isNight ? localConfig.nightCharge : 0;
     }
 
-    const subtotal = finalBaseFare + pricing.tollParking + outstationDriverCharge + extraKmCharge + localExtraHrsCharge + localNightCharge;
+    const tollParkingCharge = isOutstation ? FLAT_TOLL_PARKING : 0;
+    const subtotal = finalBaseFare + tollParkingCharge + outstationDriverCharge + extraKmCharge + localExtraHrsCharge + localNightCharge;
     const taxes = 0;
     const total = subtotal;
 
@@ -1533,7 +1653,7 @@ async function calculateDistanceAndFares() {
         baseFare: finalBaseFare,
         distanceCharge: extraKmCharge,
         driverAllowance: outstationDriverCharge + localNightCharge,
-        tollParking: pricing.tollParking + localExtraHrsCharge,
+        tollParking: tollParkingCharge + localExtraHrsCharge,
         taxes: 0
       },
       totalPrice: total,

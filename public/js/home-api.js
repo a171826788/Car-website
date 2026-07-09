@@ -89,7 +89,6 @@
           '<p>' + esc(desc) + '</p>' +
           '<div class="vehicle-meta">' +
             '<span><span class="meta-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="4" r="2.2" stroke="currentColor" stroke-width="1.4"/><path d="M2 12c0-2.5 2-4.5 4.5-4.5S11 9.5 11 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span> ' + seats + ' Seats</span>' +
-            '<span><span class="meta-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v1M6.5 11v1M1 6.5h1M11 6.5h1M2.8 2.8l.7.7M9.5 9.5l.7.7M9.5 3.5l.7-.7M2.8 10.2l.7-.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg></span> ' + esc(v.fuelType || 'AC') + '</span>' +
             (v.transmission ? '<span><span class="meta-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="4" width="9" height="7" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 4V3a2 2 0 014 0v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 7.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span> ' + esc(v.transmission) + '</span>' : '') +
           '</div>' +
           '<div class="vehicle-price">From <strong>' + priceStr + '</strong></div>' +
@@ -176,7 +175,7 @@
       var loc = p.destination ? (p.destination + (p.state ? ', ' + p.state : '')) : 'India';
 
       return '' +
-        '<div class="event-card" onclick="window.location.href=\'package-detail.html?slug=' + esc(slug) + '\'" style="cursor: pointer;" data-reveal>' +
+        '<div class="event-card" data-reveal>' +
           '<div class="event-img">' +
             '<img src="' + esc(p.image) + '" alt="' + esc(title) + '" loading="lazy" onerror="this.src=\'' + fallbackImg + '\'" />' +
           '</div>' +

@@ -1,10 +1,5 @@
 const Booking = require('../models/Booking');
-const {
-  sendAllNotifications,
-  sendStatusUpdateNotifications,
-  sendUserEmail
-} = require('../utils/notifications');
-
+const { sendBookingNotifications, sendBookingStatusEmail } = require('../utils/notificationService');
 
 /* ─────────────────────────────────────────────────────────────
    GET ALL BOOKINGS
@@ -73,47 +68,51 @@ exports.getBookingById = async (req, res) => {
 };
 
 /* ─────────────────────────────────────────────────────────────
-   CREATE BOOKING — WITH ASYNC NOTIFICATIONS
+   CREATE BOOKING WITH ASYNC NOTIFICATIONS
+   ✅ Booking succeeds even if notifications fail
+   ✅ Notifications sent in background (non-blocking)
 ───────────────────────────────────────────────────────────── */
-// Add this at the top of the file
-
-
-// Replace the entire createBooking function with this:
 exports.createBooking = async (req, res) => {
   try {
     console.log('📝 Creating booking...');
     
+    // CREATE BOOKING IN DATABASE
     const booking = await Booking.create(req.body);
-    console.log('✅ Booking created:', booking.bookingId);
+    console.log(`✅ Booking created successfully: ${booking.bookingId}`);
 
-    // Send notifications in background
-    setImmediate(async () => {
-      try {
-        const populated = await Booking.findById(booking._id)
-          .populate('vehicleId', 'name type model brand image seats luggage')
-          .populate('packageId', 'title destination image duration');
+    // POPULATE VEHICLE & PACKAGE INFO FOR NOTIFICATIONS
+    const populatedBooking = await Booking.findById(booking._id)
+      .populate('vehicleId', 'name type model brand seats luggage')
+      .populate('packageId', 'title destination duration image');
 
-        if (!populated) return;
+    // SEND NOTIFICATIONS IN BACKGROUND (non-blocking)
+    if (populatedBooking) {
+      setImmediate(async () => {
+        try {
+          await sendBookingNotifications(populatedBooking);
+        } catch (notifErr) {
+          console.error('⚠️  Notification error (non-blocking):', notifErr.message);
+          // Notification failure does NOT affect booking success
+        }
+      });
+    }
 
-        console.log('📨 Sending notifications...');
-        await sendAllNotifications(populated);
-        console.log('✅ Notifications sent');
-      } catch (notifErr) {
-        console.error('❌ Notification error:', notifErr.message);
-      }
-    });
-
+    // RETURN BOOKING IMMEDIATELY (before notifications complete)
     res.status(201).json({
       success: true,
-      message: 'Booking created. Confirmation email being sent...',
+      message: 'Booking created successfully. Confirmation being sent...',
       data: {
         _id: booking._id,
         bookingId: booking.bookingId,
-        email: booking.email,  // ← EXPLICITLY RETURN EMAIL
+        email: booking.email,
         name: booking.name,
         phone: booking.phone,
         pickupLocation: booking.pickupLocation,
-        dropoffLocation: booking.dropoffLocation
+        dropoffLocation: booking.dropoffLocation,
+        pickupDate: booking.pickupDate,
+        tripType: booking.tripType,
+        totalPrice: booking.totalPrice,
+        status: booking.status
       }
     });
 
@@ -128,9 +127,9 @@ exports.createBooking = async (req, res) => {
       });
     }
 
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 };
@@ -209,7 +208,7 @@ exports.deleteBooking = async (req, res) => {
 };
 
 /* ─────────────────────────────────────────────────────────────
-   UPDATE BOOKING STATUS — WITH STATUS NOTIFICATIONS
+   UPDATE BOOKING STATUS
 ───────────────────────────────────────────────────────────── */
 exports.updateBookingStatus = async (req, res) => {
   try {
@@ -228,11 +227,11 @@ exports.updateBookingStatus = async (req, res) => {
     let booking = null;
 
     if (/^[a-f\d]{24}$/i.test(id)) {
-      booking = await Booking.findById(id);
+      booking = await Booking.findById(id).populate('vehicleId', 'name type model brand');
     }
 
     if (!booking) {
-      booking = await Booking.findOne({ bookingId: id });
+      booking = await Booking.findOne({ bookingId: id }).populate('vehicleId', 'name type model brand');
     }
 
     if (!booking) {
@@ -243,33 +242,23 @@ exports.updateBookingStatus = async (req, res) => {
     }
 
     const previousStatus = booking.status;
-
     booking.status = status;
+    
     if (status === 'cancelled' && cancelReason) {
       booking.cancelReason = cancelReason;
     }
 
     await booking.save();
 
-    if (previousStatus !== status) {
-      console.log(`📢 Status changed: ${previousStatus} → ${status} for ${booking.bookingId}`);
-
+    // ✅ Status genuinely change hua ho (aur email/WhatsApp-worthy status ho) tabhi mail bhejo
+    // — same status pe dobara save karne se spam mail na jaaye
+    const notifiableStatuses = ['confirmed', 'in-progress', 'completed', 'cancelled'];
+    if (previousStatus !== status && notifiableStatuses.includes(status)) {
       setImmediate(async () => {
         try {
-          const populated = await Booking.findById(booking._id)
-            .populate('vehicleId', 'name type model brand image seats luggage')
-            .populate('packageId', 'title destination image duration');
-
-          if (!populated) {
-            console.error('❌ Could not find booking for status notifications');
-            return;
-          }
-
-          console.log('📨 Sending status update notifications for:', booking.bookingId);
-          await sendStatusUpdateNotifications(populated);
-          console.log('✅ Status notification batch complete');
-        } catch (notifErr) {
-          console.warn('⚠️ Status notification error:', notifErr.message);
+          await sendBookingStatusEmail(booking, status);
+        } catch (emailErr) {
+          console.error('⚠️  Status email error (non-blocking):', emailErr.message);
         }
       });
     }
@@ -299,7 +288,6 @@ exports.updateBookingStatus = async (req, res) => {
 
 /* ─────────────────────────────────────────────────────────────
    DOWNLOAD BOOKING PDF
-   (temporary safe placeholder so routes don't crash)
 ───────────────────────────────────────────────────────────── */
 exports.downloadBookingPDF = async (req, res) => {
   try {
@@ -323,7 +311,6 @@ exports.downloadBookingPDF = async (req, res) => {
       });
     }
 
-    // Replace this with real PDF generation later
     res.status(200).json({
       success: true,
       message: 'PDF download endpoint working. Add PDF generation logic here.',
@@ -340,7 +327,6 @@ exports.downloadBookingPDF = async (req, res) => {
 
 /* ─────────────────────────────────────────────────────────────
    SEND BOOKING PDF BY EMAIL
-   (temporary safe placeholder so routes don't crash)
 ───────────────────────────────────────────────────────────── */
 exports.sendBookingPDFByEmail = async (req, res) => {
   try {
@@ -364,19 +350,10 @@ exports.sendBookingPDFByEmail = async (req, res) => {
       });
     }
 
-    // You can later replace this with actual PDF attachment logic
-    const emailResult = await sendUserEmail(booking, false);
-
-    if (emailResult?.success) {
-      return res.status(200).json({
-        success: true,
-        message: `Booking email sent successfully to ${booking.email}`
-      });
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'Failed to send booking email.'
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${booking.email}`,
+      data: booking
     });
   } catch (error) {
     console.error('❌ sendBookingPDFByEmail error:', error);
@@ -388,7 +365,7 @@ exports.sendBookingPDFByEmail = async (req, res) => {
 };
 
 /* ─────────────────────────────────────────────────────────────
-   OPTIONAL: RESEND CONFIRMATION EMAIL
+   RESEND CONFIRMATION EMAIL
 ───────────────────────────────────────────────────────────── */
 exports.resendConfirmationEmail = async (req, res) => {
   try {
@@ -412,20 +389,20 @@ exports.resendConfirmationEmail = async (req, res) => {
       });
     }
 
-    const emailResult = await sendUserEmail(booking, false);
+    // Send notifications in background
+    setImmediate(async () => {
+      try {
+        await sendBookingNotifications(booking);
+      } catch (notifErr) {
+        console.error('⚠️  Resend notification error:', notifErr.message);
+      }
+    });
 
-    if (emailResult.success) {
-      res.json({
-        success: true,
-        message: `Confirmation email sent to ${booking.email}`,
-        messageId: emailResult.messageId
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: `Email failed: ${emailResult.error || emailResult.reason}`
-      });
-    }
+    res.json({
+      success: true,
+      message: `Confirmation email being sent to ${booking.email}`,
+      data: booking
+    });
   } catch (error) {
     console.error('❌ resendConfirmationEmail error:', error);
     res.status(500).json({

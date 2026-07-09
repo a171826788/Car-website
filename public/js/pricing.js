@@ -1,9 +1,11 @@
 (function () {
     'use strict';
 
-    const API_BASE = window.location.port === '5500' || window.location.port === '3000'
-        ? 'http://localhost:5000/api'
-        : '/api';
+    const API_BASE =
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000/api'
+      : '/api';
 
 
     const skeletonCSS = `
@@ -251,32 +253,43 @@
         });
     }
 
-    const LOCAL_PRICING = {
-        hatchback: { halfDay: 700,  eightHr: 1300, fullDay: 2200, extraKm: 11, extraHr: 100, night: 200, maxPax: 4 },
-        sedan:     { halfDay: 900,  eightHr: 1600, fullDay: 2700, extraKm: 13, extraHr: 100, night: 200, maxPax: 4 },
-        luxury:    { halfDay: 1000, eightHr: 1800, fullDay: 3500, extraKm: 15, extraHr: 120, night: 200, maxPax: 4 },
-        suv:       { halfDay: null, eightHr: 2500, fullDay: 3800, extraKm: 16, extraHr: 200, night: 250, maxPax: 6 },
-        muv:       { halfDay: null, eightHr: 3000, fullDay: 4800, extraKm: 21, extraHr: 200, night: 250, maxPax: 6 }
+    const MAX_PAX_FALLBACK = {
+        hatchback: 4, sedan: 4, luxury: 4, suv: 6, muv: 6, tempo: 20, bus: 20
     };
 
-    function getLocalPricing(type) {
-        const key = (type || '').toLowerCase();
-        return LOCAL_PRICING[key] || LOCAL_PRICING.sedan;
+    function getMaxPax(v) {
+        const match = (v.specifications && v.specifications.seating || '').match(/\d+/);
+        if (match) return parseInt(match[0], 10) + 1;
+        const key = (v.type || '').toLowerCase();
+        return MAX_PAX_FALLBACK[key] || 4;
     }
 
-    const OUTSTATION_PRICING = {
-        hatchback: { ratePerKm: 11, minKmPerDay: 250, extraKm: 11, driverTA: 200, maxPax: 4 },
-        sedan:     { ratePerKm: 13, minKmPerDay: 250, extraKm: 13, driverTA: 200, maxPax: 4 },
-        luxury:    { ratePerKm: 15, minKmPerDay: 250, extraKm: 15, driverTA: 200, maxPax: 4 },
-        suv:       { ratePerKm: 16, minKmPerDay: 250, extraKm: 16, driverTA: 200, maxPax: 6 },
-        muv:       { ratePerKm: 21, minKmPerDay: 250, extraKm: 21, driverTA: 200, maxPax: 6 },
-        tempo:     { ratePerKm: 32, minKmPerDay: 250, extraKm: 32, driverTA: 200, maxPax: 20 },
-        bus:       { ratePerKm: 32, minKmPerDay: 250, extraKm: 32, driverTA: 200, maxPax: 20 }
-    };
+    // ✅ DYNAMIC — admin dashboard ke pricePerDay / pricePerKm se hi calculate
+    function getLocalPricing(v) {
+        const perDay = v.pricing.perDay || 0;
+        const perKm = v.pricing.perKm || 0;
+        const key = (v.type || '').toLowerCase();
+        const noHalfDay = (key === 'suv' || key === 'muv' || key === 'tempo' || key === 'bus');
+        return {
+            halfDay: noHalfDay ? null : Math.round(perDay * 0.35 / 10) * 10,
+            eightHr: Math.round(perDay * 0.65 / 10) * 10,
+            fullDay: perDay,
+            extraKm: perKm,
+            extraHr: Math.round(perDay / 25 / 10) * 10 || 100,
+            night: Math.round(perDay / 13 / 10) * 10 || 200,
+            maxPax: getMaxPax(v)
+        };
+    }
 
-    function getOutstationPricing(type) {
-        const key = (type || '').toLowerCase();
-        return OUTSTATION_PRICING[key] || OUTSTATION_PRICING.sedan;
+    function getOutstationPricing(v) {
+        const perKm = v.pricing.perKm || 0;
+        return {
+            ratePerKm: perKm,
+            minKmPerDay: 250,
+            extraKm: perKm,
+            driverTA: 200,
+            maxPax: getMaxPax(v)
+        };
     }
 
     function renderVehicleTable() {
@@ -303,7 +316,7 @@
             }
             let html = '';
             vehicles.forEach((v, i) => {
-                const op = getOutstationPricing(v.type);
+                const op = getOutstationPricing(v);
                 html += `<tr>
                             <td>${i + 1}</td>
                             <td><strong>${v.name}</strong></td>
@@ -340,7 +353,7 @@
         }
         let html = '';
         vehicles.forEach((v, i) => {
-            const lp = getLocalPricing(v.type);
+            const lp = getLocalPricing(v);
             html += `<tr>
                         <td>${i + 1}</td>
                         <td><strong>${v.name}</strong></td>

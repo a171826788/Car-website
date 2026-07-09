@@ -149,7 +149,7 @@
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                       </svg>
                     </span>
-                    <input type="date" id="journeyDateInput" value="2025-05-25" />
+                    <input type="date" id="journeyDateInput" />
                   </div>
                 </div>
 
@@ -163,7 +163,7 @@
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
                     </span>
-                    <input type="time" id="journeyTimeInput" value="10:00" />
+                    <input type="time" id="journeyTimeInput" />
                   </div>
                 </div>
 
@@ -207,7 +207,7 @@
                 <div class="form-group span-full local-toggle-wrapper" style="margin-top: 15px; margin-bottom: 5px;">
                   <label class="switch-container">
                     <span class="switch-control">
-                      <input type="checkbox" id="localToggle" />
+                      <input type="checkbox" id="localToggle" checked />
                       <span class="slider-round"></span>
                     </span>
                     <span class="switch-label-text">
@@ -218,7 +218,7 @@
                 </div>
 
                 <!-- Local Plan Selection (Visible only when Local Travel is active) -->
-                <div class="form-group span-full" id="localPlanGroup" style="display: none; margin-top: 5px; margin-bottom: 10px;">
+                <div class="form-group span-full" id="localPlanGroup" style="display: block; margin-top: 5px; margin-bottom: 10px;">
                   <label for="localPlanSelect" class="form-label">Select Local Travel Plan *</label>
                   <div class="input-wrapper">
                     <select id="localPlanSelect" class="form-select" style="width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid #D6CEBE; background: #FFFDF9; font-size: 14px; font-weight: 500; color: var(--text);">
@@ -353,13 +353,13 @@
               <div class="form-grid">
                 <div class="form-group span-full">
                   <label for="custName" class="form-label">Full Name *</label>
-                  <input type="text" id="custName" class="form-input-text" placeholder="John Doe" required />
+                  <input type="text" id="custName" class="form-input-text" placeholder="Renter Name" required />
                   <div class="error-msg" id="nameError">Please enter your full name.</div>
                 </div>
 
                 <div class="form-group">
                   <label for="custEmail" class="form-label">Email Address *</label>
-                  <input type="email" id="custEmail" class="form-input-text" placeholder="johndoe@example.com"
+                  <input type="email" id="custEmail" class="form-input-text" placeholder="renter@gmail.com"
                     required />
                   <div class="error-msg" id="emailError">Please enter a valid email address.</div>
                 </div>
@@ -368,7 +368,7 @@
                   <label for="custPhone" class="form-label">Mobile Number *</label>
                   <div class="phone-input-group">
                     <span class="phone-prefix">+91</span>
-                    <input type="tel" id="custPhone" class="form-input-text" placeholder="9876543210"
+                    <input type="tel" id="custPhone" class="form-input-text" placeholder="6205956801"
                       pattern="[6-9][0-9]{9}" required />
                   </div>
                   <div class="error-msg" id="phoneError">Please enter a valid 10-digit mobile number.</div>

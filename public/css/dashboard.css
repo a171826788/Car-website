@@ -144,7 +144,7 @@ body {
 
 .sidebar {
     width: var(--sidebar-w);
-    background: linear-gradient(165deg, #6b4226, #3d2414);
+    background: #4d2e1a;
     border-right: none;
     display: flex;
     flex-direction: column;
@@ -200,19 +200,15 @@ body {
     color: rgba(245, 239, 230, .5) !important
 }
 
-.sidebar-logo {
-    width: 38px;
-    height: 38px;
+.sidebar-logo-img {
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--maroon), var(--rust));
-    color: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 18px;
-    flex-shrink: 0
+    object-fit: cover;
+    background: var(--white);
+    padding: 4px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .2), 0 0 0 2px rgba(217, 164, 65, .3);
 }
 
 .sidebar-brand {
@@ -318,7 +314,7 @@ body {
     font-size: 22px;
     color: var(--medium-gray);
     cursor: pointer;
-    z-index: 101
+    z-index: 999
 }
 
 .main {
@@ -331,7 +327,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(165deg, #6b4226, #3d2414);
+    background: #4d2e1a;
     border-bottom: none;
     padding: 0 28px;
     height: var(--header-h);
@@ -591,6 +587,24 @@ body {
     max-height: 280px
 }
 
+.chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 280px
+}
+
+.chart-canvas-wrap canvas {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100% !important
+}
+
+@media(max-width:480px) {
+    .chart-canvas-wrap {
+        height: 220px
+    }
+}
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -723,37 +737,37 @@ body {
 }
 
 .badge-green {
-    background: var(--green-light);
+    background: rgba(255, 255, 255, .92);
     color: var(--green)
 }
 
 .badge-blue {
-    background: var(--blue-light);
+    background: rgba(255, 255, 255, .92);
     color: var(--blue)
 }
 
 .badge-orange {
-    background: var(--orange-light);
+    background: rgba(255, 255, 255, .92);
     color: var(--orange)
 }
 
 .badge-red {
-    background: var(--red-light);
+    background: rgba(255, 255, 255, .92);
     color: var(--red)
 }
 
 .badge-gold {
-    background: var(--gold-light);
+    background: rgba(255, 255, 255, .92);
     color: var(--rust)
 }
 
 .badge-gray {
-    background: rgba(0, 0, 0, .06);
+    background: rgba(255, 255, 255, .92);
     color: var(--medium-gray)
 }
 
 .badge-maroon {
-    background: var(--maroon-light);
+    background: rgba(255, 255, 255, .92);
     color: var(--maroon)
 }
 
@@ -816,7 +830,11 @@ body {
 .admin-v-badge {
     position: absolute;
     top: 12px;
-    left: 12px
+    left: 12px;
+    z-index: 3;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+    border: 1px solid rgba(255, 255, 255, .3);
 }
 
 .admin-v-type {
@@ -834,7 +852,11 @@ body {
 .admin-v-status {
     position: absolute;
     top: 12px;
-    right: 12px
+    right: 12px;
+    z-index: 3;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+    border: 1px solid rgba(255, 255, 255, .3);
 }
 
 .admin-v-body {
@@ -986,6 +1008,23 @@ body {
 
 .form-row.triple {
     grid-template-columns: 1fr 1fr 1fr
+}
+
+.form-row.quad {
+    grid-template-columns: repeat(4, 1fr)
+}
+
+@media(max-width:900px) {
+    .form-row.triple,
+    .form-row.quad {
+        grid-template-columns: 1fr 1fr
+    }
+}
+
+@media(max-width:480px) {
+    .form-row.quad {
+        grid-template-columns: 1fr
+    }
 }
 
 .form-group {
@@ -1483,6 +1522,19 @@ select.form-control {
     align-items: center;
     justify-content: center;
     margin: 0 auto 16px
+}
+
+.confirm-icon {
+    background: rgba(97, 25, 36, .1) !important;
+    color: #611924 !important;
+}
+
+#confirmDelete {
+    background: #611924 !important;
+}
+
+#confirmDelete:hover {
+    background: #4d141c !important;
 }
 
 .confirm-text {
@@ -3088,5 +3140,38 @@ select.form-control {
     .vehicle-panel {
         width: 100%;
         right: -100%;
+    }
+}
+
+/* ═══ LOGOUT BUTTON ROW — RESPONSIVE ═══ */
+.settings-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.settings-actions-row .btn-danger {
+    border: none;
+    border-radius: 14px;
+    background: #611924;
+    color: #fff;
+    box-shadow:
+        6px 6px 14px rgba(30, 15, 5, .35),
+        -4px -4px 12px rgba(120, 80, 50, .15),
+        inset 1px 1px 2px rgba(255, 255, 255, .1);
+}
+
+.settings-actions-row .btn-danger:hover {
+    background: #4d141c;
+    box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, .3),
+        inset -2px -2px 6px rgba(255, 255, 255, .08);
+}
+
+@media (max-width: 480px) {
+    .settings-actions-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

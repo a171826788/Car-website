@@ -8,17 +8,24 @@ const fs = require('fs');
 // --------------------------------------------------
 // ENV CHECKS
 // --------------------------------------------------
-if (!process.env.JWT_SECRET) {
-  console.error('\n❌ FATAL ERROR:');
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.error('JWT_SECRET is not defined in your .env file');
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.error('\n📝 Add this to your .env file:\n');
-  console.error('JWT_SECRET=voyago_secret_key_12345\n');
-  process.exit(1);
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value || !String(value).trim()) {
+    throw new Error(`${name} is not defined in your .env file`);
+  }
+  return String(value).trim();
 }
 
-console.log('✓ JWT_SECRET is configured');
+try {
+  requiredEnv('JWT_SECRET');
+  console.log('✓ JWT_SECRET is configured');
+} catch (err) {
+  console.error('\n❌ FATAL ERROR:');
+  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.error(err.message);
+  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  process.exit(1);
+}
 
 if (!process.env.ORS_API_KEY) {
   console.warn('\n⚠️ WARNING: ORS_API_KEY is not configured in .env');
@@ -68,16 +75,23 @@ const assetsPath = path.join(rootPath, 'assets');
 // --------------------------------------------------
 // MIDDLEWARE
 // --------------------------------------------------
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000',
+];
+
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://localhost:5500',
-      'http://127.0.0.1:5500',
-      'http://localhost:5000',
-      'http://127.0.0.1:5000'
-    ],
+    origin(origin, callback) {
+      // allow Postman / curl / server-to-server with no origin
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );
@@ -95,20 +109,15 @@ if (process.env.NODE_ENV !== 'production') {
 // --------------------------------------------------
 // STATIC FILES
 // --------------------------------------------------
-
-// uploads
 app.use('/uploads', express.static(uploadsPath));
 
-// optional fallback uploads
 const altUploadsPath = path.join(rootPath, '..', 'uploads');
 if (fs.existsSync(altUploadsPath)) {
   app.use('/uploads', express.static(altUploadsPath));
 }
 
-// public folder
 app.use(express.static(publicPath, { index: false }));
 
-// optional root assets
 if (fs.existsSync(assetsPath)) {
   app.use('/assets', express.static(assetsPath));
 }

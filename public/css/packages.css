@@ -156,6 +156,16 @@
   padding: 7px 16px 7px 10px;
   margin-bottom: 22px;
   backdrop-filter: blur(8px);
+  animation: badgeGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes badgeGlow {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(217,164,65,0.25), 0 0 0 rgba(217,164,65,0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(217,164,65,0.65), 0 0 32px rgba(217,164,65,0.25);
+  }
 }
 .coming-soon-dot {
   width: 7px;
@@ -193,10 +203,42 @@
   align-items: center;
   gap: 20px;
   background: linear-gradient(120deg, rgba(110,31,43,0.06), rgba(217,164,65,0.08));
-  border: 1px solid rgba(217,164,65,0.25);
   border-radius: var(--radius-md);
   padding: 24px 28px;
   margin-bottom: 40px;
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}
+
+.coming-soon-strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--strip-angle, 0deg),
+    rgba(217,164,65,0) 0%,
+    var(--gold) 12%,
+    rgba(217,164,65,0) 28%,
+    rgba(217,164,65,0.15) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  animation: stripBorderTrace 3.5s linear infinite;
+}
+
+@property --strip-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes stripBorderTrace {
+  to { --strip-angle: 360deg; }
 }
 .coming-soon-strip-icon {
   flex-shrink: 0;

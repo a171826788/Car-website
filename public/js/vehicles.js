@@ -3,9 +3,12 @@
    100% Connected to Express + MongoDB backend
 ════════════════════════════════════════════════════════════════ */
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23EDE5D8'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='20' fill='%237a6a64' text-anchor='middle' dominant-baseline='middle'%3ENo Image%3C/text%3E%3C/svg%3E";
-const API_BASE = window.location.port === '5500' || window.location.port === '3000'
-  ? 'http://localhost:5000/api'
-  : '/api';
+
+const API_BASE =
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : '/api';
 
 // ✅ PROPER IMAGE URL FORMATTING
 function getImageUrl(imagePath) {
@@ -148,10 +151,6 @@ function renderVehicles(vehicles) {
             <span>${vehicle.seats || 4} Seats</span>
           </div>
           <div class="spec-item">
-            ${specIcons.fuel}
-            <span>${vehicle.fuelType || vehicle.fuel || 'Diesel'}</span>
-          </div>
-          <div class="spec-item">
             ${specIcons.gear}
             <span>${vehicle.transmission || 'Manual'}</span>
           </div>
@@ -170,10 +169,11 @@ function renderVehicles(vehicles) {
       </div>
     `;
 
-    // Make card clickable for modal
-    card.addEventListener('click', (e) => {
-      if (e.target.classList.contains('btn-book')) return;
+    // Sirf Quick View button pe click karne se modal khulega, poore card pe nahi
+    const quickViewBtn = card.querySelector('.quick-view-btn');
+    quickViewBtn?.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       openVehicleModal(vehicleKey);
     });
 
@@ -195,8 +195,10 @@ function initFilters() {
 
   if (!grid || cards.length === 0) return;
 
-  let activeType = 'all';
-  let acOnly     = false;
+  let activeType   = 'all';
+  let acOnly       = false;
+  let searchQuery  = '';
+  const searchInput = document.getElementById('vehicleSearchInput');
 
   // Read URL params
   const urlParams = new URLSearchParams(window.location.search);
@@ -228,9 +230,11 @@ function initFilters() {
     sorted.forEach(card => grid.appendChild(card));
 
     sorted.forEach(card => {
-      const typeMatch = activeType === 'all' || card.dataset.type === activeType;
-      const acMatch   = !acOnly || card.dataset.ac === 'true';
-      const show      = typeMatch && acMatch;
+      const typeMatch   = activeType === 'all' || card.dataset.type === activeType;
+      const acMatch     = !acOnly || card.dataset.ac === 'true';
+      const nameEl      = card.querySelector('.vehicle-name');
+      const searchMatch = !searchQuery || (nameEl && nameEl.textContent.toLowerCase().includes(searchQuery));
+      const show        = typeMatch && acMatch && searchMatch;
 
       if (show) {
         card.classList.remove('hidden', 'card-enter');
@@ -269,6 +273,13 @@ function initFilters() {
 
   if (sortSelect) {
     sortSelect.addEventListener('change', applyFilters);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      applyFilters();
+    });
   }
 
   if (resetBtn) {

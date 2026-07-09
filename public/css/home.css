@@ -878,6 +878,7 @@ input, select, button, textarea { font-family: var(--font-body); }
 .packages-section {
   background: var(--maroon);
   padding: 96px 0;
+  margin-bottom: 40px;
 }
 
 .packages-tabs {
@@ -1217,6 +1218,7 @@ input, select, button, textarea { font-family: var(--font-body); }
 .testimonials-section { background: var(--ivory); }
 
 .testimonials-carousel { overflow: hidden; margin-bottom: 28px; }
+.reviews-cta { display: flex; justify-content: center; }
 .testimonial-track {
   display: flex;
   gap: 28px;
@@ -1242,6 +1244,15 @@ input, select, button, textarea { font-family: var(--font-body); }
   padding: 5px 14px;
   border-radius: 50px;
   margin-bottom: 12px;
+  animation: upcomingGlow 1.8s ease-in-out infinite;
+}
+@keyframes upcomingGlow {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(217,164,65,.5), 0 0 0 0 rgba(217,164,65,.4);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(217,164,65,.9), 0 0 10px 4px rgba(217,164,65,.35);
+  }
 }
 
 .events-disabled .events-slider-wrap,
@@ -1317,6 +1328,10 @@ input, select, button, textarea { font-family: var(--font-body); }
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 48px;
+}
+.events-header > div {
+  text-align: center;
+  flex: 1;
 }
 
 .events-slider-wrap {
@@ -2062,7 +2077,7 @@ input, select, button, textarea { font-family: var(--font-body); }
 }
 @media (max-width: 480px) {
   :root { --nav-h: 64px; }
-  .logo-img { height: 46px; } /* Slightly smaller logo on extra-small mobile screens */
+  .logo-img { height: 46px; width: 46px; } /* Slightly smaller logo on extra-small mobile screens */
 }
 
     /* ─── EVENT CARDS CORNER CORRECTION ─── */

@@ -473,10 +473,6 @@ async function buildSimilarVehicles(currentId, currentType) {
               <span>${v.seats || 4} Passengers</span>
             </div>
             <div class="spec-item">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v1M7 12v1M1 7h1M12 7h1M2.9 2.9l.7.7M10.4 10.4l.7.7M10.4 3.6l.7-.7M2.9 11.1l.7-.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg>
-              <span>${v.ac !== false ? 'AC' : 'Non-AC'}</span>
-            </div>
-            <div class="spec-item">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="4.5" width="10" height="7" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 4.5V3.5a2.5 2.5 0 015 0v1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
               <span>${v.luggage || v.bags || 2} Bags</span>
             </div>

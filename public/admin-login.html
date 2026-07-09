@@ -349,19 +349,25 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: #2a0709;
+            background: #fff;
             display: grid;
             place-items: center;
             margin: 0 auto 18px;
             border: 1.5px solid rgba(212, 160, 23, 0.3);
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform .15s ease;
         }
 
-        .badge svg {
-            width: 30px;
-            height: 30px;
-            stroke: var(--gold-light);
-            fill: none;
-            stroke-width: 1.8;
+        .badge:hover {
+            transform: scale(1.06);
+        }
+
+        .badge-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         h1.welcome {
@@ -981,13 +987,9 @@
 
     <main class="card" role="main">
         <section class="header-panel" aria-labelledby="welcome-heading">
-            <div class="badge" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                    <rect x="4" y="8" width="16" height="11" rx="2" />
-                    <path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-                    <path d="M14 14l5-2-1 3 1 3-5-2-3 1 1-2-1-2z" stroke-linejoin="round" />
-                </svg>
-            </div>
+            <a href="/" class="badge" aria-label="Go to homepage">
+                <img src="/assets/logo1.png" alt="ATAT" class="badge-logo" />
+            </a>
             <h1 class="welcome" id="welcome-heading">Admin <span class="gold">Portal</span></h1>
             <p class="subhead">Secure access to the ATAT control panel.</p>
         </section>
