@@ -73,29 +73,47 @@ const assetsPath = path.join(rootPath, 'assets');
 });
 
 // --------------------------------------------------
-// MIDDLEWARE
+// CORS CONFIG
 // --------------------------------------------------
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://127.0.0.1:3000',
   'http://localhost:5173',
+  'http://127.0.0.1:5173',
   'http://localhost:5500',
   'http://127.0.0.1:5500',
   'http://localhost:5000',
   'http://127.0.0.1:5000',
-];
+  'https://aman-tours-and-travels.onrender.com',
+  process.env.FRONTEND_URL,
+  process.env.RENDER_EXTERNAL_URL,
+].filter(Boolean);
 
 app.use(
   cors({
     origin(origin, callback) {
-      // allow Postman / curl / server-to-server with no origin
+      // allow Postman / curl / server-to-server requests
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error(`CORS blocked for origin: ${origin}`);
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
+// optional explicit preflight support
+app.options('*', cors());
+
+// --------------------------------------------------
+// BODY PARSERS
+// --------------------------------------------------
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -217,6 +235,7 @@ async function start() {
       console.log(`  Admin Login: http://localhost:${PORT}/admin`);
       console.log(`  Route Health: http://localhost:${PORT}/api/route/health`);
       console.log('========================================\n');
+      console.log('Allowed CORS origins:', allowedOrigins);
     });
   } catch (error) {
     console.error('Server startup failed:', error);
