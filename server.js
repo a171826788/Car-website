@@ -60,17 +60,19 @@ const publicPath = path.join(rootPath, 'public');
 const uploadsPath = path.join(rootPath, 'uploads');
 const assetsPath = path.join(rootPath, 'assets');
 
-// Ensure upload directories exist
-[
-  uploadsPath,
-  path.join(uploadsPath, 'vehicles'),
-  path.join(uploadsPath, 'packages'),
-  path.join(uploadsPath, 'temp'),
-].forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
+// Ensure upload directories exist (skip on Vercel read-only filesystem)
+if (!process.env.VERCEL) {
+  [
+    uploadsPath,
+    path.join(uploadsPath, 'vehicles'),
+    path.join(uploadsPath, 'packages'),
+    path.join(uploadsPath, 'temp'),
+  ].forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+}
 
 // --------------------------------------------------
 // CORS CONFIG
