@@ -219,28 +219,30 @@ app.use((err, req, res, next) => {
 // --------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
-async function start() {
+// Connect to DB and seed default admin (executes eagerly for serverless)
+connectDB().then(async () => {
+  console.log('✓ Database connected');
   try {
-    await connectDB();
-    console.log('✓ Database connected');
-
     await seedDefaultAdmin();
     console.log('✓ Default admin checked/seeded');
-
-    app.listen(PORT, () => {
-      console.log('\n========================================');
-      console.log('  Voyago Server Running');
-      console.log(`  Port: ${PORT}`);
-      console.log(`  Home: http://localhost:${PORT}`);
-      console.log(`  Admin Login: http://localhost:${PORT}/admin`);
-      console.log(`  Route Health: http://localhost:${PORT}/api/route/health`);
-      console.log('========================================\n');
-      console.log('Allowed CORS origins:', allowedOrigins);
-    });
-  } catch (error) {
-    console.error('Server startup failed:', error);
-    process.exit(1);
+  } catch (err) {
+    console.error('Admin seed error:', err);
   }
+}).catch(err => console.error('Database connection failed:', err));
+
+// Start the server only if NOT running on Vercel
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log('\n========================================');
+    console.log('  Voyago Server Running');
+    console.log(`  Port: ${PORT}`);
+    console.log(`  Home: http://localhost:${PORT}`);
+    console.log(`  Admin Login: http://localhost:${PORT}/admin`);
+    console.log(`  Route Health: http://localhost:${PORT}/api/route/health`);
+    console.log('========================================\n');
+    console.log('Allowed CORS origins:', allowedOrigins);
+  });
 }
 
-start();
+// Export the app for Vercel's serverless functions
+module.exports = app;
