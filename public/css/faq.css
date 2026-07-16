@@ -978,7 +978,7 @@ body {
 
 @media (max-width: 480px) {
   :root { --nav-h: 64px; }
-  .logo-img { height: 46px; } /* Slightly smaller logo on extra-small mobile screens */
+  .logo-img { height: 46px; width: 46px; } /* Slightly smaller logo on extra-small mobile screens */
 }
 
 /* Ensure Navbar and Footer use Inter font exactly like the Home page to match sizes */

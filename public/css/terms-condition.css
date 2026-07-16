@@ -1136,7 +1136,7 @@ body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--
 
 @media (max-width: 480px) {
   :root { --nav-h: 64px; }
-  .logo-img { height: 46px; } 
+  .logo-img { height: 46px; width: 46px;} 
 }
 
 /* FOOTER  */
