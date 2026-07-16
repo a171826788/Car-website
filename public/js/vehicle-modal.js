@@ -7,7 +7,7 @@ const VEHICLE_DATA = {
     name: 'Swift Dzire', type: 'Sedan',
     badge: 'Most Booked', badgeClass: 'vm-badge--maroon',
     rating: 4.8, trips: 1840,
-    desc: 'India\'s classic highway companion — smooth, fuel-efficient and perfectly sized for couples or small families on long drives.',
+    desc: 'India\'s classic highway companion smooth, fuel-efficient and perfectly sized for couples or small families on long drives.',
     images: [
       'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=900&q=80',
       'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=900&q=80',
@@ -32,7 +32,7 @@ const VEHICLE_DATA = {
     name: 'Honda City', type: 'Sedan',
     badge: 'Premium', badgeClass: 'vm-badge--gold',
     rating: 4.9, trips: 2210,
-    desc: 'Step up the comfort — spacious cabin, premium leather interiors and a whisper-quiet ride. Ideal for business trips and special occasions.',
+    desc: 'Step up the comfort spacious cabin, premium leather interiors and a whisper-quiet ride. Ideal for business trips and special occasions.',
     images: [
       'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=900&q=80',
       'https://images.unsplash.com/photo-1617469165786-8007eda3caa7?w=900&q=80',
@@ -58,7 +58,7 @@ const VEHICLE_DATA = {
     name: 'Innova Crysta', type: 'SUV',
     badge: 'Popular', badgeClass: 'vm-badge--maroon',
     rating: 4.9, trips: 3120,
-    desc: 'India\'s favourite family mover — powerful diesel engine, roomy 7-seater cabin and smooth commanding ride on any terrain.',
+    desc: 'India\'s favourite family mover powerful diesel engine, roomy 7-seater cabin and smooth commanding ride on any terrain.',
     images: [
       'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=900&q=80',
       'https://images.unsplash.com/photo-1551830820-330a71b99659?w=900&q=80',
@@ -83,7 +83,7 @@ const VEHICLE_DATA = {
     name: 'Toyota Fortuner', type: 'SUV',
     badge: 'Luxury', badgeClass: 'vm-badge--gold',
     rating: 4.9, trips: 980,
-    desc: 'The pinnacle of SUV luxury — powerful 4WD, premium leather cabin and commanding road presence for those who demand the best.',
+    desc: 'The pinnacle of SUV luxury powerful 4WD, premium leather cabin and commanding road presence for those who demand the best.',
     images: [
       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&q=80',
       'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=900&q=80',
@@ -109,7 +109,7 @@ const VEHICLE_DATA = {
     name: 'Maruti Ertiga', type: 'MUV',
     badge: 'Family Pick', badgeClass: 'vm-badge--rust',
     rating: 4.7, trips: 1560,
-    desc: 'The sweet spot between a sedan and a full SUV — ideal for joint families and small group outings with great fuel efficiency.',
+    desc: 'The sweet spot between a sedan and a full SUV ideal for joint families and small group outings with great fuel efficiency.',
     images: [
       'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=900&q=80',
       'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=900&q=80',
@@ -135,7 +135,7 @@ const VEHICLE_DATA = {
     name: 'Tempo Traveller 12', type: 'Tempo',
     badge: 'Group Fav', badgeClass: 'vm-badge--maroon',
     rating: 4.8, trips: 890,
-    desc: 'Push-back seats, USB charging ports, reading lights and dedicated luggage racks — perfect for comfortable group getaways and pilgrimages.',
+    desc: 'Push-back seats, USB charging ports, reading lights and dedicated luggage racks perfect for comfortable group getaways and pilgrimages.',
     images: [
       'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=900&q=80',
       'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=900&q=80',
@@ -160,7 +160,7 @@ const VEHICLE_DATA = {
     name: 'Tempo Traveller 20', type: 'Tempo',
     badge: 'Large Groups', badgeClass: 'vm-badge--maroon',
     rating: 4.7, trips: 560,
-    desc: 'Larger pilgrimages and big family tours — wide push-back seats, enhanced suspension and ample luggage storage for extended journeys.',
+    desc: 'Larger pilgrimages and big family tours wide push-back seats, enhanced suspension and ample luggage storage for extended journeys.',
     images: [
       'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=900&q=80',
       'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=900&q=80',

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   VOYAGO — main.js
+   VOYAGO main.js
 ═══════════════════════════════════════ */
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -93,7 +93,7 @@
   /* ─── COUNTER ANIMATION ─── */
   const counters = document.querySelectorAll(".count-up");
 
-  // ✅ Timestamp-based (not increment-based) — agar tab pause/background ho jaaye
+  // ✅ Timestamp-based (not increment-based) agar tab pause/background ho jaaye
   // ya bfcache se page restore ho, counter turant sahi target tak "catch up" kar leta hai
   // instead of freezing mid-value.
   function animateCounter(counter) {

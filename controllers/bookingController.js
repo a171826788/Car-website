@@ -251,7 +251,7 @@ exports.updateBookingStatus = async (req, res) => {
     await booking.save();
 
     // ✅ Status genuinely change hua ho (aur email/WhatsApp-worthy status ho) tabhi mail bhejo
-    // — same status pe dobara save karne se spam mail na jaaye
+    // same status pe dobara save karne se spam mail na jaaye
     const notifiableStatuses = ['confirmed', 'in-progress', 'completed', 'cancelled'];
     if (previousStatus !== status && notifiableStatuses.includes(status)) {
       setImmediate(async () => {

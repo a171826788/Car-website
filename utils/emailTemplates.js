@@ -159,7 +159,7 @@ function buildBookingEmailHTML(booking) {
             </tr>
             <tr>
               <td style="padding: 11px 20px; color: #777; font-size: 13px; width: 40%; border-bottom: 1px solid #f5f5f5;">Selected</td>
-              <td style="padding: 11px 20px; font-size: 14px; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${vehicleName}${vehicleModel ? ' — ' + vehicleModel : ''}</td>
+              <td style="padding: 11px 20px; font-size: 14px; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${vehicleName}${vehicleModel ? ' ' + vehicleModel : ''}</td>
             </tr>
             <tr>
               <td style="padding: 11px 20px; color: #777; font-size: 13px;">Capacity</td>
@@ -222,7 +222,7 @@ function buildBookingEmailHTML(booking) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booking Confirmed — ${booking.bookingId}</title>
+  <title>Booking Confirmed ${booking.bookingId}</title>
 </head>
 <body style="margin: 0; padding: 0; background: #f0f0f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
@@ -350,7 +350,7 @@ function buildBookingEmailHTML(booking) {
               <img src="/assets/logo.png" alt="AMAN TOUR AND TRAVELS" width="160" style="display: block; margin: 0 auto 10px auto; border-radius: 4px; opacity: 0.9;" />
               <p style="margin: 0 0 12px 0; font-size: 10px; color: #aaa; letter-spacing: 1px;">SAFE JOURNEY, HAPPY JOURNEY</p>
               <p style="margin: 0; font-size: 11px; color: #666;">
-                42, Travel Hub, MG Road, Pune, Maharashtra — 411001<br/>
+                42, Travel Hub, MG Road, Pune, Maharashtra 411001<br/>
                 📞 +91 1800-000-0000 &nbsp;|&nbsp; ✉ hello@amantourandtravels.in
               </p>
               <p style="margin: 12px 0 0; font-size: 10px; color: #555;">
@@ -424,7 +424,7 @@ function buildStatusUpdateEmailHTML(booking) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booking Update — ${booking.bookingId}</title>
+  <title>Booking Update ${booking.bookingId}</title>
 </head>
 <body style="margin: 0; padding: 0; background: #f0f0f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 

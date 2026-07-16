@@ -1,7 +1,7 @@
 {
   "name": "voyago-backend",
   "version": "1.0.0",
-  "description": "Voyago travel platform — auth backend",
+  "description": "Voyago travel platform auth backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

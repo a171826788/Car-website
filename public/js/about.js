@@ -1,5 +1,5 @@
 /* ============================================================
-   about.js — ATAT Aman Tour and Travels | About Page Scripts
+   about.js ATAT Aman Tour and Travels | About Page Scripts
    ============================================================ */
 
 /* ------- INTERSECTION OBSERVER FOR SCROLL ANIMATIONS ------- */

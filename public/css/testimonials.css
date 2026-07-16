@@ -1189,7 +1189,7 @@ ul {
 
 
 
-/* HERO — Tablet & Mobile responsive */
+/* HERO Tablet & Mobile responsive */
 @media (max-width: 1024px) {
   .hero {
     height: auto;

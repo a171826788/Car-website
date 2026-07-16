@@ -5,7 +5,7 @@ const twilio = require('twilio');
 const brevo = require('@getbrevo/brevo');
 
 /* ═══════════════════════════════════════════════════════════════
-   SANDBOX OPT-IN CHECKER — Check if user is allowed to receive WhatsApp
+   SANDBOX OPT-IN CHECKER Check if user is allowed to receive WhatsApp
    ═══════════════════════════════════════════════════════════════ */
 const SANDBOX_MODE = true; // Set to false when you upgrade to production
 const SANDBOX_TEST_NUMBERS = process.env.SANDBOX_TEST_NUMBERS?.split(',') || ['+919359873623'];
@@ -27,7 +27,7 @@ function getSandboxOptInInstructions() {
   
   return `
     
-⚠️  SANDBOX MODE — Recipient Opt-In Required
+⚠️  SANDBOX MODE Recipient Opt-In Required
 ────────────────────────────────────────────────────────────
 Your Twilio WhatsApp is in SANDBOX mode. Recipients must opt-in first:
 
@@ -58,7 +58,7 @@ function getLogoAttachment() {
     cachedLogoAttachment = { name: 'logo1.png', content: fileBuffer.toString('base64') };
     console.log('✅ Email logo loaded for embedding:', logoPath);
   } catch (err) {
-    console.warn('⚠️ Email logo not found at', logoPath, '— emails will send without logo image.');
+    console.warn('⚠️ Email logo not found at', logoPath, 'emails will send without logo image.');
     cachedLogoAttachment = null;
   }
   return cachedLogoAttachment;
@@ -110,7 +110,7 @@ function getBrevoClient() {
   try {
     if (typeof brevo.BrevoClient === 'function') {
       brevoApiInstance = new brevo.BrevoClient({ apiKey });
-      console.log('✅ Brevo client initialized (BrevoClient API) — key:', maskSecret(apiKey));
+      console.log('✅ Brevo client initialized (BrevoClient API) key:', maskSecret(apiKey));
       return brevoApiInstance;
     }
     if (typeof brevo.TransactionalEmailsApi === 'function') {
@@ -125,7 +125,7 @@ function getBrevoClient() {
         throw new Error('Unsupported legacy Brevo SDK auth shape');
       }
       brevoApiInstance = api;
-      console.log('✅ Brevo client initialized (legacy TransactionalEmailsApi) — key:', maskSecret(apiKey));
+      console.log('✅ Brevo client initialized (legacy TransactionalEmailsApi) key:', maskSecret(apiKey));
       return brevoApiInstance;
     }
     throw new Error(`Unrecognized @getbrevo/brevo SDK shape. Exports: ${Object.keys(brevo).join(', ')}`);
@@ -173,7 +173,7 @@ function getTwilioClient() {
   }
   try {
     twilioClient = twilio(accountSid, authToken);
-    console.log('✅ Twilio client initialized — SID:', maskSecret(accountSid));
+    console.log('✅ Twilio client initialized SID:', maskSecret(accountSid));
     
     // ✅ Log sandbox mode status
     if (SANDBOX_MODE) {
@@ -278,7 +278,7 @@ function emailShell({ badgeText, badgeColor, headline, introLine, bodyTableRows,
         <td style="padding:16px 24px 28px;text-align:center;border-top:1px solid #F0EAE0;">
           <p style="margin:0 0 4px;font-size:12px;color:#A35334;font-weight:700;">Aman Tour and Travels</p>
           <p style="margin:0;font-size:11.5px;color:#7a6a64;">Y-325B, Sector 12, Noida, 201301 &nbsp;|&nbsp; +91 6205956801</p>
-          <p style="margin:4px 0 0;font-size:11px;color:#b8a99f;">This is an automated email — please do not reply directly.</p>
+          <p style="margin:4px 0 0;font-size:11px;color:#b8a99f;">This is an automated email please do not reply directly.</p>
         </td>
       </tr>
     </table>
@@ -376,12 +376,12 @@ Status: PENDING - confirm and assign vehicle`;
 /* ─── EMAIL SENDER ─── */
 async function sendEmail(recipientEmail, recipientName, subject, htmlContent, includeLogo = true) {
   if (!recipientEmail || !isValidEmail(recipientEmail)) {
-    console.log(`⏭️ Email skipped — invalid recipient email: ${recipientEmail || '(missing)'}`);
+    console.log(`⏭️ Email skipped invalid recipient email: ${recipientEmail || '(missing)'}`);
     return { success: false, reason: 'Invalid recipient email', email: recipientEmail || null };
   }
   const senderEmail = env('SENDER_EMAIL');
   if (!senderEmail || !isValidEmail(senderEmail)) {
-    console.log('⏭️ Email skipped — SENDER_EMAIL is missing or invalid');
+    console.log('⏭️ Email skipped SENDER_EMAIL is missing or invalid');
     return { success: false, reason: 'Invalid sender email', email: recipientEmail };
   }
   const payload = {
@@ -410,30 +410,30 @@ async function sendEmail(recipientEmail, recipientName, subject, htmlContent, in
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   WHATSAPP SENDER — WITH SANDBOX ERROR HANDLING
+   WHATSAPP SENDER WITH SANDBOX ERROR HANDLING
    ═══════════════════════════════════════════════════════════════ */
 async function sendWhatsApp(phoneNumber, message) {
   const client = getTwilioClient();
   if (!client) {
-    console.log(`⏭️ WhatsApp skipped to ${phoneNumber || '(missing)'} — Twilio not configured`);
+    console.log(`⏭️ WhatsApp skipped to ${phoneNumber || '(missing)'} Twilio not configured`);
     return { success: false, reason: twilioInitError || 'Twilio not configured', phone: phoneNumber || null };
   }
 
   const rawFrom = env('TWILIO_WHATSAPP_FROM');
   if (!rawFrom) {
-    console.log('⏭️ WhatsApp skipped — TWILIO_WHATSAPP_FROM not configured');
+    console.log('⏭️ WhatsApp skipped TWILIO_WHATSAPP_FROM not configured');
     return { success: false, reason: 'Sender not configured', phone: phoneNumber || null };
   }
 
   const normalizedPhone = normalizePhoneNumber(phoneNumber);
   if (!normalizedPhone) {
-    console.log(`⏭️ WhatsApp skipped — invalid phone format: ${phoneNumber || '(missing)'}`);
+    console.log(`⏭️ WhatsApp skipped invalid phone format: ${phoneNumber || '(missing)'}`);
     return { success: false, reason: 'Invalid phone format', phone: phoneNumber || null };
   }
 
   // ✅ CHECK SANDBOX OPT-IN
   if (SANDBOX_MODE && !isUserOptedIntoSandbox(normalizedPhone)) {
-    console.log(`⏭️ WhatsApp skipped — recipient not opted into sandbox`);
+    console.log(`⏭️ WhatsApp skipped recipient not opted into sandbox`);
     console.log(getSandboxOptInInstructions());
     return { 
       success: false, 
@@ -581,7 +581,7 @@ function buildStatusUpdateEmailHTML(booking, status) {
     : 'TBD';
 
   const statusMeta = {
-    confirmed: { badge: 'BOOKING CONFIRMED', color: '#2e7d32', headline: 'Your Booking is Confirmed! ✅', line: 'Great news — your trip has been confirmed by our team. Driver details will be shared with you shortly.' },
+    confirmed: { badge: 'BOOKING CONFIRMED', color: '#2e7d32', headline: 'Your Booking is Confirmed! ✅', line: 'Great news your trip has been confirmed by our team. Driver details will be shared with you shortly.' },
     'in-progress': { badge: 'TRIP IN PROGRESS', color: '#6E1F2B', headline: 'Your Trip Has Started 🚗', line: 'Your driver is on the way / your trip is now in progress. Have a safe journey!' },
     completed: { badge: 'TRIP COMPLETED', color: '#6E1F2B', headline: 'Trip Completed 🎉', line: 'We hope you had a great journey with us. Thank you for choosing Aman Tour and Travels!' },
     cancelled: { badge: 'BOOKING CANCELLED', color: '#D32F2F', headline: 'Booking Cancelled ❌', line: 'Your booking has been cancelled. If this was unexpected or you have questions, please reach out to us.' }

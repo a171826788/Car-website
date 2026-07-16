@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   VOYAGO — vehicle-detail.js
+   VOYAGO vehicle-detail.js
    100% Connected to Express + MongoDB backend.
    All hardcoded row data removed. Fetches dynamically via API.
    ═══════════════════════════════════════════════════════════════ */

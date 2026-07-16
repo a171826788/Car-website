@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   VOYAGO — Shared API Utility
+   VOYAGO Shared API Utility
 ═══════════════════════════════════════════════ */
 
 const API = (() => {

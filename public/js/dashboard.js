@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   ATAT — Admin Dashboard Controller (FIXED IMAGE HANDLING)
+   ATAT Admin Dashboard Controller (FIXED IMAGE HANDLING)
    Matches: admin-dashboard.html
    Depends: /js/api.js, Chart.js (CDN)
 ════════════════════════════════════════════════════════════════ */
@@ -453,7 +453,7 @@ function renderVehicles() {
     }
     var tc = { sedan: 'badge-blue', suv: 'badge-green', van: 'badge-orange', bus: 'badge-maroon', luxury: 'badge-gold', motorcycle: 'badge-gray', Sedan: 'badge-blue', SUV: 'badge-green', Van: 'badge-orange', Bus: 'badge-maroon', Luxury: 'badge-gold', Motorcycle: 'badge-gray' };
     grid.innerHTML = state.vehicles.map(function (v) {
-        // ✅ PROPER IMAGE HANDLING (never 404s — falls back to inline SVG)
+        // ✅ PROPER IMAGE HANDLING (never 404s falls back to inline SVG)
         var img = getImageUrl(v.image || (v.images && v.images[0]) || '');
         var active = isVehicleActive(v);
         var imgTag = img
@@ -536,7 +536,7 @@ function switchVehicleTab(tabId) {
 function addVehicleImage() { state.vehicleImages.push(''); renderVehicleImages(); }
 function removeVehicleImage(idx) { state.vehicleImages.splice(idx, 1); renderVehicleImages(); }
 
-// ✅ PROPER IMAGE RENDERING (never 404s — falls back to inline SVG)
+// ✅ PROPER IMAGE RENDERING (never 404s falls back to inline SVG)
 function renderVehicleImages() {
     var list = document.getElementById('imgList');
     if (!list) return;
@@ -571,7 +571,7 @@ async function saveVehicle() {
     if (!name) { form.elements['name'].closest('.form-group').classList.add('error'); hasError = true; }
     if (!type) { form.elements['type'].closest('.form-group').classList.add('error'); hasError = true; }
     if (!brand) { form.elements['brand'].closest('.form-group').classList.add('error'); hasError = true; }
-    // pricePerDay / pricePerKm are required on the backend schema — validate here too
+    // pricePerDay / pricePerKm are required on the backend schema validate here too
     if (!pricePerDay) { form.elements['pricePerDay'].closest('.form-group').classList.add('error'); hasError = true; }
     if (!pricePerKm) { form.elements['pricePerKm'].closest('.form-group').classList.add('error'); hasError = true; }
     if (hasError) { toast('Please fill in all required fields (name, type, brand, price/day, price/km)', 'error'); return; }
@@ -1102,7 +1102,7 @@ document.addEventListener('click', function (e) {
 });
 
 /* ═══════════════════════════
-   INIT — DOMContentLoaded
+   INIT DOMContentLoaded
 ════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function () {
     loadAdminProfile();

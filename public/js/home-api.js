@@ -1,5 +1,5 @@
 /**
- * VOYAGO home.html — API Integration
+ * VOYAGO home.html API Integration
  * Fetches live vehicles & packages from the backend.
  * Existing hardcoded HTML acts as fallback if API is unavailable.
  *

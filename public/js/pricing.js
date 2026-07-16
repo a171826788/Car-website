@@ -177,7 +177,7 @@
             p.itinerary.forEach(item => {
                 if (item.day) {
                     const parts = [item.title, item.description].filter(Boolean);
-                    itinerary[`Day ${item.day}`] = parts.join(' — ') || 'Details coming soon.';
+                    itinerary[`Day ${item.day}`] = parts.join(' ') || 'Details coming soon.';
                 }
             });
         }
@@ -264,7 +264,7 @@
         return MAX_PAX_FALLBACK[key] || 4;
     }
 
-    // ✅ DYNAMIC — admin dashboard ke pricePerDay / pricePerKm se hi calculate
+    // ✅ DYNAMIC admin dashboard ke pricePerDay / pricePerKm se hi calculate
     function getLocalPricing(v) {
         const perDay = v.pricing.perDay || 0;
         const perKm = v.pricing.perKm || 0;

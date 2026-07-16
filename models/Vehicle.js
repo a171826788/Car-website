@@ -58,7 +58,7 @@ function normalizeVehicleType(value) {
   if (value === null || value === undefined) return value;
   var raw = String(value).trim();
   if (!raw) return raw;
-  // Already an exact canonical match — pass through untouched
+  // Already an exact canonical match pass through untouched
   if (VEHICLE_TYPES.indexOf(raw) !== -1) return raw;
   var key = raw.toLowerCase();
   return TYPE_ALIAS_MAP[key] || raw; // fall through so enum still reports unknown values clearly
@@ -181,7 +181,7 @@ const vehicleSchema = new mongoose.Schema(
 
     // ===============================
     // ROUTES
-    // (was missing — admin UI "Available Routes"
+    // (was missing admin UI "Available Routes"
     // field had nowhere to persist to before this)
     // ===============================
 

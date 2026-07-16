@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════
-   VOYAGO — home.css
+   VOYAGO home.css
    Palette:
      Deep Maroon   #6E1F2B
      Mustard Gold  #D9A441
@@ -299,7 +299,7 @@ input, select, button, textarea { font-family: var(--font-body); }
 .mobile-only { display: none; }
 
 /* ════════════════════════════════════
-   HERO — ENHANCED
+   HERO ENHANCED
 ════════════════════════════════════ */
 .hero {
   position: relative;
@@ -766,7 +766,7 @@ input, select, button, textarea { font-family: var(--font-body); }
 
 .vehicles-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 0;
 }
@@ -789,17 +789,17 @@ input, select, button, textarea { font-family: var(--font-body); }
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
 }
-.vehicle-card.featured-card {
+/* .vehicle-card.featured-card {
   background: var(--maroon);
   border-color: var(--maroon);
-}
-.vehicle-card.featured-card .vehicle-info h3 { color: var(--white); }
-.vehicle-card.featured-card .vehicle-info p { color: rgba(255,255,255,.78); }
-.vehicle-card.featured-card .vehicle-meta span { color: rgba(255,255,255,.75); background: rgba(255,255,255,.12); }
-.vehicle-card.featured-card .vehicle-price { color: rgba(255,255,255,.7); }
+} */
+/* .vehicle-card.featured-card .vehicle-info h3 { color: var(--white); } */
+/* .vehicle-card.featured-card .vehicle-info p { color: rgba(255,255,255,.78); } */
+/* .vehicle-card.featured-card .vehicle-meta span { color: rgba(255,255,255,.75); background: rgba(255,255,255,.12); } */
+/* .vehicle-card.featured-card .vehicle-price { color: rgba(255,255,255,.7); } */
 .vehicle-card.featured-card .vehicle-price strong { color: var(--gold); }
 .vehicle-card.featured-card .vehicle-badge { background: var(--gold); color: var(--maroon-dark); }
-.vehicle-card.featured-card .btn-primary { background: var(--white); color: var(--maroon-dark); border-color: var(--white); }
+.vehicle-card.featured-card .btn-primary { background: var(--maroon-dark); color: var(--white); border-color: var(--maroon); }
 .vehicle-card.featured-card .btn-primary:hover { background: var(--gold); border-color: var(--gold); color: var(--dark); }
 
 .vehicle-img-wrap {

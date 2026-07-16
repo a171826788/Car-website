@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   VOYAGO — packages.js  (100% Backend-Driven)
-   Safe version — works with your existing HTML as-is.
+   VOYAGO packages.js  (100% Backend-Driven)
+   Safe version works with your existing HTML as-is.
    ═══════════════════════════════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const INITIAL_LIMIT = 8;
   const EXPANDED_LIMIT = 200;
 
-  /* ── DOM (all safe — won't crash if element missing) ── */
+  /* ── DOM (all safe won't crash if element missing) ── */
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
 
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs           = $$('#pkgTabs .tab-btn');
   const statsSection   = $('.stats-bar-section');
 
-  /* ── Safe style helper — never crashes on null ── */
+  /* ── Safe style helper never crashes on null ── */
   function setDisplay(el, value) {
     if (el) el.style.display = value;
   }
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     RENDER ONE CARD — 100% from DB data
+     RENDER ONE CARD 100% from DB data
      ═══════════════════════════════════════════════════════════ */
   function renderCardHTML(pkg) {
     const title    = pkg.title || pkg.name || '';
@@ -201,13 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     FETCH FROM BACKEND — the ONLY data source
+     FETCH FROM BACKEND the ONLY data source
      ═══════════════════════════════════════════════════════════ */
   async function fetchPackages() {
     if (isFetching) return;
     isFetching = true;
 
-    // Safely show/hide — won't crash if element is null
+    // Safely show/hide won't crash if element is null
     if (grid) grid.innerHTML = skeletonHTML(6);
     setDisplay(errorStateEl, 'none');
     setDisplay(noResultsEl, 'none');
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STAT COUNTERS — only from API stats
+     STAT COUNTERS only from API stats
      ═══════════════════════════════════════════════════════════ */
   let statsAnimated = false;
 
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
   tabs.forEach(tab => tab.addEventListener('click', () => {
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    currentCategory = tab.dataset.filter; // e.g. "hill" — mapped to DB later
+    currentCategory = tab.dataset.filter; // e.g. "hill" mapped to DB later
     itemsLimit = INITIAL_LIMIT;
     updatePackagesGrid();
   }));
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $$('[data-reveal]').forEach(el => revealObs.observe(el));
 
   /* ═══════════════════════════════════════════════════════════
-     BOOT — fetch everything from backend
+     BOOT fetch everything from backend
      ═══════════════════════════════════════════════════════════ */
   fetchPackages();
 

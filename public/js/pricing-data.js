@@ -5,7 +5,7 @@ const vehicles = [{
     badge: 'MOST BOOKED',
     rating: 4.8,
     totalTrips: 1840,
-    description: 'India\'s classic highway companion — smooth, fuel-efficient and perfectly sized for couples or small families on long drives.',
+    description: 'India\'s classic highway companion smooth, fuel-efficient and perfectly sized for couples or small families on long drives.',
     image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=700&q=80',
     pricing: { perKm: 12, perDay: 2800, minimumFare: 350, advance: 280, advancePercentage: 10,
         driverCharges: 'Included', tollParking: 'Extra (stated upfront)', balanceDue: 'On journey day' },
@@ -16,7 +16,7 @@ const vehicles = [{
         'Bluetooth Connectivity', 'Phone Holder'
     ],
     highlights: ['Fully insured rides', 'Free cancellation', 'Instant confirmation'],
-    whyChoose: 'The Swift Dzire is the perfect balance of economy and comfort. With its excellent fuel efficiency and compact size, it navigates city traffic and open highways with equal ease — ideal for 2–4 people on short or medium trips.',
+    whyChoose: 'The Swift Dzire is the perfect balance of economy and comfort. With its excellent fuel efficiency and compact size, it navigates city traffic and open highways with equal ease ideal for 2–4 people on short or medium trips.',
     idealFor: ['Couples', 'Small Families', 'Business Trips', 'Airport Transfers'],
     cancellationPolicy: 'Free cancellation up to 24 hrs before pickup.',
     reviews: [
@@ -58,7 +58,7 @@ const packages = [{
     bestTime: 'March to June and September to November',
     groupSize: '2–6 people',
     reviews: [
-        { name: 'Amit Verma', stars: 5, comment: 'Absolutely magical. The mountains, the snow, the colonial charm — everything was perfect.' },
+        { name: 'Amit Verma', stars: 5, comment: 'Absolutely magical. The mountains, the snow, the colonial charm everything was perfect.' },
         { name: 'Sneha Reddy', stars: 4, comment: 'Well-planned itinerary. The driver was excellent on the winding roads.' }
     ],
     whyChoose: 'This grand tour combines the colonial elegance of Shimla with the adventure of Manali. Perfect for families and couples, it offers the best of Himachal in one seamless journey.'

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   VOYAGO — vehicle-modal.css
+   VOYAGO vehicle-modal.css
    Shared vehicle detail modal/drawer
    Import AFTER vehicles.css (shares same design tokens)
    ═══════════════════════════════════════════════════════════════ */
@@ -28,7 +28,7 @@
 /* ─── DRAWER ─── */
 .vm-drawer {
   position: relative;
-  width: calc(100% - 32px);   /* 16px gap each side — never touches edges */
+  width: calc(100% - 32px);   /* 16px gap each side never touches edges */
   max-width: 1120px;
   max-height: 92vh;
   background: var(--ivory);
@@ -102,7 +102,7 @@
 /* ─── LEFT PANEL ─── */
 .vm-left {
   padding: 8px 28px 36px;
-  overflow: visible;          /* was hidden — was clipping content from scroll */
+  overflow: visible;          /* was hidden was clipping content from scroll */
 }
 
 /* ─── GALLERY ─── */
@@ -387,7 +387,7 @@
   height: 100%;
 }
 
-/* Pricing header — dark gradient */
+/* Pricing header dark gradient */
 .vm-pricing-header {
   background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon) 100%);
   padding: 28px 24px 22px;
@@ -551,7 +551,7 @@
    RESPONSIVE
 ═══════════════════════════════════════════════════════════════ */
 
-/* Wide desktop — taller drawer */
+/* Wide desktop taller drawer */
 @media (min-width: 1200px) {
   .vm-drawer {
     max-height: 88vh;
@@ -568,7 +568,7 @@
   .vm-specs-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Tablet portrait — stack layout */
+/* Tablet portrait stack layout */
 @media (max-width: 768px) {
   .vm-drawer {
     max-height: 95vh;
@@ -763,7 +763,7 @@
   top: -1px;
 }
 
-/* Responsive — tighten on narrow mobile */
+/* Responsive tighten on narrow mobile */
 @media (max-width: 480px) {
   .vm-advance-banner { padding: 12px 14px; gap: 10px; }
   .vm-advance-icon { width: 30px; height: 30px; }

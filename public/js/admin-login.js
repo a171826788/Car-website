@@ -72,7 +72,7 @@
         if (el) el.addEventListener('input', function () { clearError(id); });
     });
 
-    // ── Key auto-format (cosmetic only — real validation is server-side) ──
+    // ── Key auto-format (cosmetic only real validation is server-side) ──
     $('#regKey').addEventListener('input', function () {
         clearError('regKey');
         var val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -82,7 +82,7 @@
     });
 
     /* ═══════════════════════════════════════════════
-       TOKEN KEY — must match js/api.js (voyago_token)
+       TOKEN KEY must match js/api.js (voyago_token)
        Using a helper to stay DRY and prevent future drift
        ═══════════════════════════════════════════════ */
     var TOKEN_KEY = 'voyago_token';
@@ -175,7 +175,7 @@
         });
     });
 
-    // ── REGISTER — key sent to server, validated server-side only ──
+    // ── REGISTER key sent to server, validated server-side only ──
     $('#registerForm').addEventListener('submit', function (e) {
         e.preventDefault();
         ['regName', 'regEmail', 'regPassword', 'regConfirm', 'regKey'].forEach(clearError);
@@ -250,7 +250,7 @@
                 if (data.success) {
                     window.location.href = '/admin/dashboard';
                 } else {
-                    /* Token invalid — clear it so we don't loop */
+                    /* Token invalid clear it so we don't loop */
                     removeToken();
                 }
             })

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════
-   AMAN TOUR AND TRAVELS — booking.js
+   AMAN TOUR AND TRAVELS booking.js
    DB-driven vehicles, itinerary download, full backend integration
    ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ─── PRICING CONFIG (maps vehicle type → rates) ─── */
-  const FLAT_TOLL_PARKING = 350; // flat toll & parking — every outstation trip, regardless of vehicle
+  const FLAT_TOLL_PARKING = 350; // flat toll & parking every outstation trip, regardless of vehicle
 
   const vehiclePricingConfig = {
     'sedan':       { rate: 18, baseFare: 2850, driverAllowance: 400, tollParking: 350, icon: '🚗' },
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return localPlansConfig['sedan'];
   }
 
-  // ✅ DYNAMIC — image 3 wala Half Day / 8 Hrs / Full Day structure, lekin rates
+  // ✅ DYNAMIC image 3 wala Half Day / 8 Hrs / Full Day structure, lekin rates
   // vehicle ke apne backend pricePerDay/pricePerKm se derive hote hain, static nahi.
   // Backend price missing ho to purani static table par fallback.
   function getLocalConfigForVehicle(v) {
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  /* ─── NOMINATIM (GEOCODING) + OSRM (ROUTING) — free, no API key needed ─── */
+  /* ─── NOMINATIM (GEOCODING) + OSRM (ROUTING) free, no API key needed ─── */
   async function getRouteFromORS(from, to) {
     try {
       // 1. Pickup ko geocode karo
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return h >= 22 || h < 6;
   }
 
-  /* ─── VEHICLE IMAGE MAP — local /assets/images/vehicles/ ─── */
+  /* ─── VEHICLE IMAGE MAP local /assets/images/vehicles/ ─── */
   const vehicleImageMap = {
     'sedan':       '/assets/images/vehicles/sedan.png',
     'suv':         '/assets/images/vehicles/suv.png',
@@ -670,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // If DB data loads first, we need to check there too
     }
   } else {
-    // Normal booking mode — apply URL params
+    // Normal booking mode apply URL params
     if (urlParams.get('pickup')) pickupInput.value = urlParams.get('pickup');
     if (urlParams.get('dropoff')) dropoffInput.value = urlParams.get('dropoff');
     if (urlParams.get('date')) journeyDateInput.value = urlParams.get('date');
@@ -1212,7 +1212,7 @@ async function calculateDistanceAndFares() {
       }
     }
 
-    // ✅ Seedha per-km × total km — minimum-km base fare wala split hata diya
+    // ✅ Seedha per-km × total km minimum-km base fare wala split hata diya
     finalBaseFare = Math.round(distForFare * outstationConfig.rate);
 
     if (baseFareLabel) {
@@ -1245,7 +1245,7 @@ async function calculateDistanceAndFares() {
     if (outstationChargeRow) outstationChargeRow.style.display = 'none';
   }
 
-  // ✅ Flat toll & parking — sirf outstation trip pe, local package mein nahi
+  // ✅ Flat toll & parking sirf outstation trip pe, local package mein nahi
   const tollParkingCharge = isOutstation ? FLAT_TOLL_PARKING : 0;
   if (tollParkingRow) tollParkingRow.style.display = tollParkingCharge > 0 ? 'flex' : 'none';
 
@@ -1292,7 +1292,7 @@ function checkMinDistanceValidation(isOutstation, distForFare) {
   }
 
   /* ═══════════════════════════════════════
-     VEHICLE LIST — FROM DATABASE (with local images)
+     VEHICLE LIST FROM DATABASE (with local images)
      ═══════════════════════════════════════ */
   function renderVehiclesList() {
     if (!vehiclesLoaded) {
@@ -1327,7 +1327,7 @@ function checkMinDistanceValidation(isOutstation, distForFare) {
     const typeOrder = { 'sedan': 0, 'suv': 1, 'premium-suv': 2, 'tempo': 3, 'bus': 4 };
     const sorted = [...dbVehicles].sort((a, b) => (typeOrder[a.type] ?? 9) - (typeOrder[b.type] ?? 9));
 
-    // Pre-select vehicle passed via URL (?vehicle=<id> or ?vehicle=<name>) — comes from
+    // Pre-select vehicle passed via URL (?vehicle=<id> or ?vehicle=<name>) comes from
     // vehicles.html "Book Now" button (passes _id) or vehicle-detail/modal (passes name)
     if (window.__preselectedVehicleParam && !selectedVehicleId) {
       const p = window.__preselectedVehicleParam;
@@ -1398,7 +1398,7 @@ function checkMinDistanceValidation(isOutstation, distForFare) {
         const perDay = Number(v.pricePerDay) || 0;
 
         if (perDay) {
-          // ✅ Ab seedha pricePerDay dikhega — vehicles.html jaisa hi consistent
+          // ✅ Ab seedha pricePerDay dikhega vehicles.html jaisa hi consistent
           displayFare = perDay;
           displayPriceSub = '/day';
           displayRateNote = `₹${outstationConfig.rate}/km beyond 250 km/day`;
@@ -1720,7 +1720,7 @@ function checkMinDistanceValidation(isOutstation, distForFare) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Booking Itinerary — Aman Tour and Travels</title>
+<title>Booking Itinerary Aman Tour and Travels</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#333; background:#fff; padding:40px; }
