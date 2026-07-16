@@ -215,8 +215,8 @@ input, select, button, textarea { font-family: var(--font-body); }
   text-decoration: none;
 }
 .logo-img {
-  height: 54px;
-  width: 54px;
+  height: 64px;
+  width: 64px;
   display: block;
   object-fit: cover;
   border-radius: 50%;
@@ -245,6 +245,8 @@ input, select, button, textarea { font-family: var(--font-body); }
   height: var(--nav-h);
   display: flex; align-items: center;
   transition: background var(--transition), box-shadow var(--transition);
+  padding-bottom: 42px;
+            padding-top: 42px;
 }
 .navbar.scrolled {
   background: rgba(245,239,230,.97);
