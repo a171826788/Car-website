@@ -984,10 +984,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localToggle.checked) {
       if (outstationToggle) outstationToggle.checked = false;
       if (localPlanGroup) localPlanGroup.style.display = 'block';
+      if (typeOneWayBtn) typeOneWayBtn.style.display = 'inline-block';
     } else {
       // Local off ho raha hai -> outstation zabardasti ON kar do (dono kabhi off nahi honge)
       if (outstationToggle) outstationToggle.checked = true;
       if (localPlanGroup) localPlanGroup.style.display = 'none';
+      if (typeOneWayBtn) typeOneWayBtn.style.display = 'none';
+      if (typeRoundTripBtn) typeRoundTripBtn.click();
     }
     renderVehiclesList();
     calculateDistanceAndFares();
@@ -996,10 +999,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (outstationToggle.checked) {
       if (localToggle) localToggle.checked = false;
       if (localPlanGroup) localPlanGroup.style.display = 'none';
+      if (typeOneWayBtn) typeOneWayBtn.style.display = 'none';
+      if (typeRoundTripBtn) typeRoundTripBtn.click();
     } else {
       // Outstation off ho raha hai -> local zabardasti ON kar do (dono kabhi off nahi honge)
       if (localToggle) localToggle.checked = true;
       if (localPlanGroup) localPlanGroup.style.display = 'block';
+      if (typeOneWayBtn) typeOneWayBtn.style.display = 'inline-block';
     }
     renderVehiclesList();
     calculateDistanceAndFares();
@@ -1247,7 +1253,13 @@ async function calculateDistanceAndFares() {
 
   // ✅ Flat toll & parking sirf outstation trip pe, local package mein nahi
   const tollParkingCharge = isOutstation ? FLAT_TOLL_PARKING : 0;
-  if (tollParkingRow) tollParkingRow.style.display = tollParkingCharge > 0 ? 'flex' : 'none';
+  if (tollParkingRow) {
+    if (!isOutstation) {
+      tollParkingRow.style.display = 'flex';
+    } else {
+      tollParkingRow.style.display = tollParkingCharge > 0 ? 'flex' : 'none';
+    }
+  }
 
   const subtotal =
     finalBaseFare +
@@ -1261,7 +1273,7 @@ async function calculateDistanceAndFares() {
     finalBaseFare,
     distanceCharge,
     0,
-    tollParkingCharge,
+    !isOutstation ? 'Actual' : tollParkingCharge,
     taxes,
     subtotal
   );
@@ -1286,7 +1298,13 @@ function checkMinDistanceValidation(isOutstation, distForFare) {
     if (summaryBaseFare) summaryBaseFare.textContent = `₹ ${Number(base).toLocaleString('en-IN')}`;
     if (summaryDistanceCharge) summaryDistanceCharge.textContent = `₹ ${Number(dist).toLocaleString('en-IN')}`;
     if (summaryDriverAllowance) summaryDriverAllowance.textContent = `₹ ${Number(driver).toLocaleString('en-IN')}`;
-    if (summaryTollParking) summaryTollParking.textContent = `₹ ${Number(toll).toLocaleString('en-IN')}`;
+    if (summaryTollParking) {
+      if (toll === 'Actual') {
+        summaryTollParking.textContent = 'Actual';
+      } else {
+        summaryTollParking.textContent = `₹ ${Number(toll).toLocaleString('en-IN')}`;
+      }
+    }
     if (summaryTaxes) summaryTaxes.textContent = `₹ ${Number(tax).toLocaleString('en-IN')}`;
     if (summaryTotal) summaryTotal.textContent = `₹ ${Number(total).toLocaleString('en-IN')}`;
   }

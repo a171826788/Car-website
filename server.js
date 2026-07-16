@@ -88,6 +88,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5000',
   'https://aman-tours-and-travels.onrender.com',
   'https://aman-tours-and-travels.vercel.app',
+  'https://www.amantourandtravel.in/',
   process.env.FRONTEND_URL,
   process.env.RENDER_EXTERNAL_URL,
 ].filter(Boolean);
